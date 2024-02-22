@@ -1,0 +1,33 @@
+[user]
+	name = Jordan Baczuk
+	email = <email>
+	signingkey = /home/.ssh/id_rsa.pub
+[http]
+	postBuffer = 2097152000000
+[pull]
+	rebase = true
+[alias]
+	alias = config --get-regexp ^alias\\.
+	# Force push
+	shove = push -f
+	# Get the current branch name (not so useful in itself, but used in
+	# other aliases)
+	branch-name = "!git rev-parse --abbrev-ref HEAD"
+	# Push the current branch to the remote "origin", and set it to track
+	# the upstream branch
+	publish = "!git push -u origin $(git branch-name)"
+	mainbranch = "!git remote show origin | sed -n '/HEAD branch/s/.*: //p'"
+	migrate = !sh -c 'git stash push && git checkout $1 && git pull && git stash pop' -
+	echo = !sh -c 'echo $1' -
+	branch-clean = "!git fetch -p && for branch in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do git branch -d $branch; done"
+	branch-force-clean = "!git fetch -p && for branch in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do git branch -D $branch; done"
+	pulll = "!git stash && git pull && git stash pop"
+  ignore = "!git rm -r --cached . && git add ."
+  undo = "!git_undo"
+
+[core]
+	editor = vim
+[gpg]
+	format = ssh
+[commit]
+	gpgsign = true

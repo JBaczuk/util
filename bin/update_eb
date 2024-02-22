@@ -1,0 +1,3 @@
+#!/bin/bash
+
+VERSION_LABEL=$(aws elasticbeanstalk describe-environments --environment-names My-environment --query "Environments[0].VersionLabel" --output text) && aws elasticbeanstalk update-environment --environment-name My-environment --version-label "${VERSION_LABEL}"

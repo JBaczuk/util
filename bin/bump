@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# npm version bump
+
+PACKAGE_VERSION=$(cat package.json \
+  | grep version \
+  | head -1 \
+  | awk -F: '{ print $2 }' \
+  | sed 's/[", ]//g')
+
+if [ -z "$PACKAGE_VERSION" ]
+then
+  PACKAGE_VERSION=$(cat README.md | sed -n 's/^.*version-v\([0-9.-rc]*\)-.*/\1/p')
+fi
+
+NEXTVERSION=$(echo ${PACKAGE_VERSION} | awk -F. -v OFS=. '{$NF += 1 ; print}')
+
+echo "current version: $PACKAGE_VERSION"
+echo "next version: $NEXTVERSION"
+
+# package.json
+sed -i '' -E "s/\"version\": \"[0-9]*.[0-9]*.[0-9]*\"/\"version\": \"${NEXTVERSION}\"/" package.json
+
+# .env.example files
+# sed -i '' -E "s/REACT_APP_RELEASE_VERSION=[0-9]*.[0-9]*.[0-9]*/REACT_APP_RELEASE_VERSION=${NEXTVERSION}/" ./.env*
+
+# https://github.com/othneildrew/Best-README-Template
+# find . -type f -name '*.md' -maxdepth 2 | xargs sed -i '' -E "s/version-v[0-9]*.[0-9]*.[0-9]*-blue/version-v${NEXTVERSION}-blue/"
+
+echo "bumped from $PACKAGE_VERSION to $NEXTVERSION"
